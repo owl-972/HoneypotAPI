@@ -1,0 +1,6 @@
+@HoneypotAPI_HostAddress = http://localhost:5172
+
+GET {{HoneypotAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
