@@ -15,12 +15,14 @@ namespace HoneypotAPI.Controllers
         private readonly AppDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
+        private readonly HttpClient _realClient;
 
         public HoneypotController(AppDbContext context, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _context = context;
-            _httpClientFactory = httpClientFactory;
             _configuration = configuration;
+
+            _realClient = httpClientFactory.CreateClient("RealSystemClient");
         }
 
         [HttpGet("{**endpoint}")]
@@ -82,7 +84,7 @@ namespace HoneypotAPI.Controllers
                 var realSystemBaseUrl = _configuration["RealSystemConfig:BaseUrl"];
                 var targetUrl = $"{realSystemBaseUrl}/{endpoint.Replace("-", "/")}";
 
-                var client = _httpClientFactory.CreateClient();
+                var client = _realClient;
                 var httpRequest = new HttpRequestMessage(new HttpMethod(method), targetUrl);
 
                 // Copy headers

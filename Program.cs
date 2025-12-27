@@ -14,8 +14,26 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
 
-// Add HttpClient for forwarding requests
-builder.Services.AddHttpClient();
+// Add named HttpClient with automatic decompression for the real system
+builder.Services.AddHttpClient("RealSystemClient", client =>
+{
+    var baseUrl = builder.Configuration["RealSystemConfig:BaseUrl"];
+    if (!string.IsNullOrEmpty(baseUrl))
+    {
+        client.BaseAddress = new Uri(baseUrl);
+    }
+    // You can add default headers here if needed, e.g.:
+    // client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    return new HttpClientHandler
+    {
+        AutomaticDecompression = System.Net.DecompressionMethods.GZip |
+                                 System.Net.DecompressionMethods.Deflate |
+                                 System.Net.DecompressionMethods.Brotli // optional, if you want brotli too
+    };
+});
 
 var app = builder.Build();
 

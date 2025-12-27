@@ -27,7 +27,7 @@ namespace HoneypotAPI.Models
         public string Headers { get; set; }
 
         [Column(TypeName = "TEXT")]
-        public string Payload { get; set; }
+        public string? Payload { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
